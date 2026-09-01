@@ -12,7 +12,7 @@ export default function Footer() {
                 src="/images/noblecare4u/noblecare4u-logo.webp"
                 alt="Noblecare4u"
                 width={230}
-                height={64}
+                height={39}
               />
             </a>
             <p>Home healthcare focused on elder care, nursing and physiotherapy.</p>

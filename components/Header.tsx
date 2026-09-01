@@ -17,7 +17,7 @@ export default function Header() {
             src="/images/noblecare4u/noblecare4u-logo.webp"
             alt="Noblecare4u"
             width={250}
-            height={66}
+            height={42}
             priority
           />
         </a>
