@@ -342,7 +342,7 @@ export default function CallbackForm() {
             </button>
 
             <p className="form-note">
-              This standalone prototype connects to the backend API when NEXT_PUBLIC_BACKEND_URL is configured.
+              Enquiries are securely processed and coordinated by our Noblecare4u care team.
             </p>
 
             <div

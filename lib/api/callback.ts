@@ -3,7 +3,6 @@ import { getEffectiveAttribution } from '@/lib/utm';
 export type ApiOutcomeCategory =
   | 'success'
   | 'validation_error'
-  | 'missing_backend_url'
   | 'timeout'
   | 'network_error'
   | 'server_error'
@@ -70,17 +69,6 @@ export async function submitCallbackEnquiry(
     };
   }
 
-  // Check backend configuration
-  const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (!backendBaseUrl) {
-    return {
-      ok: false,
-      category: 'missing_backend_url',
-      message:
-        'Backend API is not configured (NEXT_PUBLIC_BACKEND_URL is not set). No enquiry was sent.',
-    };
-  }
-
   // Normalize and trim lead fields
   const trimmedName = formData.name.trim();
   const trimmedPhone = formData.phone.trim();
@@ -106,7 +94,7 @@ export async function submitCallbackEnquiry(
     payload.additionalInfo = trimmedMessage;
   }
 
-  const endpoint = `${backendBaseUrl.replace(/\/+$/, '')}/api/signup`;
+  const endpoint = '/api/signup';
   const abortController = new AbortController();
   const timeoutId = setTimeout(() => abortController.abort(), TIMEOUT_MS);
 

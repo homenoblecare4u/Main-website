@@ -3,22 +3,45 @@ import mongoose from 'mongoose';
 // Ensure all models are registered with Mongoose before any queries
 import '@/server/models';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
- */
-let cached = (global as any).mongoose;
-
-if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
 }
 
-async function connectToDatabase() {
-  if (!MONGODB_URI) {
+declare global {
+  var mongooseCache: MongooseCache | undefined;
+}
+
+let cached = global.mongooseCache;
+
+if (!cached) {
+  cached = global.mongooseCache = { conn: null, promise: null };
+}
+
+/**
+ * Connects to MongoDB with Mongoose singleton caching across serverless invocations.
+ * Never logs credentials, database URIs, or passwords.
+ */
+async function connectToDatabase(): Promise<typeof mongoose> {
+  let uri = process.env.MONGODB_URI?.trim();
+
+  if (!uri) {
     throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+  }
+
+  // Handle accidental wrapping in angle brackets or quotes
+  if (uri.startsWith('<') && uri.endsWith('>')) {
+    uri = uri.slice(1, -1).trim();
+  }
+  if (
+    (uri.startsWith('"') && uri.endsWith('"')) ||
+    (uri.startsWith("'") && uri.endsWith("'"))
+  ) {
+    uri = uri.slice(1, -1).trim();
+  }
+
+  if (!cached) {
+    cached = global.mongooseCache = { conn: null, promise: null };
   }
 
   if (cached.conn) {
@@ -26,16 +49,18 @@ async function connectToDatabase() {
   }
 
   if (!cached.promise) {
-    const opts = {
+    cached.promise = mongoose.connect(uri, {
       bufferCommands: false,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      return mongoose;
     });
   }
-  cached.conn = await cached.promise;
-  return cached.conn;
+
+  try {
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch (err) {
+    cached.promise = null;
+    throw err;
+  }
 }
 
 export default connectToDatabase;

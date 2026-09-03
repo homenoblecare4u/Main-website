@@ -1,90 +1,77 @@
 import User, { IUser } from '@/server/models/User';
-import UtmCampaign from '@/server/models/UtmCampaign';
-import CareInfo from '@/server/models/CareInfo';
-
+import UtmCampaign, { IUtmCampaign } from '@/server/models/UtmCampaign';
+import CareInfo, { ICareInfo } from '@/server/models/CareInfo';
 import mongoose from 'mongoose';
 
 export class UserRepository {
-  async findByEmailOrPhone(email: string | undefined, phone: string): Promise<IUser | null> {
-    const conditions: any[] = [{ phone }];
-    if (email) conditions.push({ email });
-    return User.findOne({ $or: conditions });
+  /**
+   * Finds an existing user strictly by normalized 10-digit Indian phone number.
+   */
+  async findByPhone(phone: string): Promise<IUser | null> {
+    return User.findOne({ phone: phone.trim() });
   }
 
-  async createUser(userData: Partial<IUser>, campaignData: any, careData: any): Promise<IUser> {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+  /**
+   * Creates a new user, their initial care inquiry, and a touchpoint record.
+   * Standalone MongoDB safe (no transaction dependency).
+   */
+  async createUser(
+    userData: Partial<IUser>,
+    campaignData: Partial<IUtmCampaign>,
+    careData: Partial<ICareInfo>
+  ): Promise<IUser> {
+    // 1. Create User
+    const user = await User.create(userData);
 
-    try {
-      // Check again inside transaction to prevent race conditions
-      const conditions: any[] = [{ phone: userData.phone }];
-      if (userData.email) conditions.push({ email: userData.email });
+    // 2. Always create initial CareInfo record
+    await CareInfo.create({
+      userId: user._id,
+      ...careData,
+    });
 
-      const existingUser = await User.findOne({ 
-        $or: conditions 
-      }).session(session);
+    // 3. Always create initial UtmCampaign touchpoint (including direct / organic)
+    await UtmCampaign.create({
+      userId: user._id,
+      ...campaignData,
+    });
 
-      if (existingUser) {
-        throw new Error('USER_ALREADY_EXISTS');
-      }
-
-      const [user] = await User.create([userData], { session });
-      
-      const tasks = [];
-      if (Object.keys(campaignData).length > 0) {
-        tasks.push(UtmCampaign.create([{ userId: user._id, ...campaignData }], { session }));
-      }
-      if (Object.keys(careData).length > 0) {
-        tasks.push(CareInfo.create([{ userId: user._id, ...careData }], { session }));
-      }
-      await Promise.all(tasks);
-
-      await session.commitTransaction();
-      return user;
-    } catch (error) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    return user;
   }
 
-  async updateExistingUser(userId: mongoose.Types.ObjectId, userData: Partial<IUser>, campaignData: any, careData: any) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    
-    try {
-      if (userData) {
-        await User.findByIdAndUpdate(userId, {
-          $set: {
-            name: userData.name,
-            city: userData.city,
-            countryCode: userData.countryCode,
-            timezone: userData.timezone,
-          }
-        }, { session });
-      }
+  /**
+   * Updates demographic information for an existing user and records
+   * a brand-new care inquiry and UTM touchpoint.
+   * Standalone MongoDB safe (no transaction dependency).
+   */
+  async updateExistingUser(
+    userId: mongoose.Types.ObjectId,
+    userData: Partial<IUser>,
+    campaignData: Partial<IUtmCampaign>,
+    careData: Partial<ICareInfo>
+  ): Promise<boolean> {
+    // 1. Update demographics on User
+    await User.findByIdAndUpdate(userId, {
+      $set: {
+        name: userData.name,
+        city: userData.city,
+        countryCode: userData.countryCode || '+91',
+        timezone: userData.timezone || 'Asia/Kolkata',
+        ...(userData.email ? { email: userData.email } : {}),
+      },
+    });
 
-      const tasks = [];
-      if (Object.keys(campaignData).length > 0) {
-        tasks.push(UtmCampaign.create([{ userId, ...campaignData }], { session }));
-      }
-      if (Object.keys(careData).length > 0) {
-        tasks.push(CareInfo.create([{ userId, ...careData }], { session }));
-      }
-      await Promise.all(tasks);
-      
-      await session.commitTransaction();
-      return true;
-    } catch (error) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    // 2. Always record a new CareInfo entry for this submission
+    await CareInfo.create({
+      userId,
+      ...careData,
+    });
+
+    // 3. Always record a new UtmCampaign entry for this submission
+    await UtmCampaign.create({
+      userId,
+      ...campaignData,
+    });
+
+    return true;
   }
 }

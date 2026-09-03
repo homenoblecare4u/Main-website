@@ -1,55 +1,92 @@
 import { z } from 'zod';
+import { CARE_NEEDED_OPTIONS } from '@/server/models/CareInfo';
 
-export const SignupSchema = z.object({
-  name: z.string().min(2, 'Enter your name using 2-60 letters.').max(60, 'Enter your name using 2-60 letters.').regex(/^[a-zA-Z\s]+$/, 'Enter your name using 2-60 letters.'),
-  email: z.string().email('Invalid email format').optional(),
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number beginning with 6-9.'),
-  careNeeded: z.string().min(1, 'Select the care you need.'),
-  city: z.string().min(2, 'Enter a valid city using 2-50 letters.').max(50, 'Enter a valid city using 2-50 letters.').regex(/^[a-zA-Z\s]+$/, 'Enter a valid city using 2-50 letters.'),
-  additionalInfo: z.string().optional(),
-  countryCode: z.string().default('+91'),
-  timezone: z.string().default('Asia/Kolkata'),
-  route: z.string().optional(),
-  utm_source: z.string().optional(),
-  utm_medium: z.string().optional(),
-  utm_campaign: z.string().optional(),
-  utm_content: z.string().optional(),
-  platform: z.string().optional(),
-  gclid: z.string().optional(),
-  fbclid: z.string().optional(),
-  fbp: z.string().optional(),
-  fbc: z.string().optional(),
-  utm_term: z.string().optional(),
-  matchtype: z.string().optional(),
-  network: z.string().optional(),
-  device: z.string().optional(),
-  keyword: z.string().optional(),
-  placement: z.string().optional(),
-  campaignid: z.string().optional(),
-  adgroupid: z.string().optional(),
-}).transform(data => {
-  // 1. Strip the country code from the start of the phone number if the user accidentally included it
-  if (data.phone.startsWith(data.countryCode)) {
-    data.phone = data.phone.slice(data.countryCode.length);
-  }
-  // 2. Strip any leftover non-numeric characters (spaces, dashes, etc)
-  data.phone = data.phone.replace(/\D/g, '');
-  
-  return data;
-});
+const UNICODE_NAME_REGEX = /^[\p{L}][\p{L}\p{M} .'-]{1,59}$/u;
+const UNICODE_CITY_REGEX = /^[\p{L}][\p{L}\p{M} .'-]{1,49}$/u;
+const INDIAN_MOBILE_REGEX = /^[6-9]\d{9}$/;
 
-export const UserDetailsQuerySchema = z.object({
-  range: z.enum(['today', 'yesterday', '7days', '1month', 'custom']).default('today'),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-  page: z.string().regex(/^\d+$/).default('1').transform(Number),
-  limit: z.string().regex(/^\d+$/).default('10').transform(Number),
-}).refine(data => {
-  if (data.range === 'custom') {
-    return !!data.startDate && !!data.endDate;
-  }
-  return true;
-}, {
-  message: "startDate and endDate are required when range is 'custom'",
-  path: ['range'],
-});
+const sanitizeOptionalTracking = () =>
+  z
+    .string()
+    .trim()
+    .max(200, 'Must not exceed 200 characters')
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : undefined));
+
+export const SignupSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(2, 'Enter your name using 2–60 letters.')
+      .max(60, 'Enter your name using 2–60 letters.')
+      .refine((v) => UNICODE_NAME_REGEX.test(v), {
+        message: 'Enter your name using 2–60 letters.',
+      }),
+    phone: z
+      .string()
+      .trim()
+      .transform((val) => {
+        let cleaned = val.replace(/[\s\-()]/g, '');
+        if (cleaned.startsWith('+91')) {
+          cleaned = cleaned.slice(3);
+        } else if (cleaned.startsWith('91') && cleaned.length === 12) {
+          cleaned = cleaned.slice(2);
+        } else if (cleaned.startsWith('0') && cleaned.length === 11) {
+          cleaned = cleaned.slice(1);
+        }
+        return cleaned;
+      })
+      .pipe(
+        z.string().regex(INDIAN_MOBILE_REGEX, {
+          message: 'Enter a valid 10-digit Indian mobile number beginning with 6–9.',
+        })
+      ),
+    careNeeded: z.enum(CARE_NEEDED_OPTIONS),
+    city: z
+      .string()
+      .trim()
+      .min(2, 'Enter a valid city using 2–50 letters.')
+      .max(50, 'Enter a valid city using 2–50 letters.')
+      .refine((v) => UNICODE_CITY_REGEX.test(v), {
+        message: 'Enter a valid city using 2–50 letters.',
+      }),
+    additionalInfo: z
+      .string()
+      .trim()
+      .max(500, 'Briefly describe the care requirement within 500 characters.')
+      .optional()
+      .transform((v) => (v && v.length > 0 ? v : undefined)),
+    email: z
+      .string()
+      .trim()
+      .email('Invalid email format')
+      .optional()
+      .or(z.literal(''))
+      .transform((v) => (v && v.length > 0 ? v.toLowerCase() : undefined)),
+    countryCode: z.string().trim().default('+91'),
+    timezone: z.string().trim().default('Asia/Kolkata'),
+    route: z.string().trim().default('/'),
+    website: z.string().optional(), // Honeypot
+    // Strict allowlisted tracking fields (capped at 200 chars)
+    utm_source: sanitizeOptionalTracking(),
+    utm_medium: sanitizeOptionalTracking(),
+    utm_campaign: sanitizeOptionalTracking(),
+    utm_content: sanitizeOptionalTracking(),
+    utm_term: sanitizeOptionalTracking(),
+    platform: sanitizeOptionalTracking(),
+    gclid: sanitizeOptionalTracking(),
+    fbclid: sanitizeOptionalTracking(),
+    fbp: sanitizeOptionalTracking(),
+    fbc: sanitizeOptionalTracking(),
+    matchtype: sanitizeOptionalTracking(),
+    network: sanitizeOptionalTracking(),
+    device: sanitizeOptionalTracking(),
+    keyword: sanitizeOptionalTracking(),
+    placement: sanitizeOptionalTracking(),
+    campaignid: sanitizeOptionalTracking(),
+    adgroupid: sanitizeOptionalTracking(),
+  })
+  .strip();
+
+export type SignupInput = z.infer<typeof SignupSchema>;
