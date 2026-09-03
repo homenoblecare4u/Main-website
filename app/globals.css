@@ -204,6 +204,8 @@ textarea { min-height: 90px; resize: vertical; }
 .error.show { display: block; }
 .success { display: none; margin-top: 15px; padding: 13px; border-radius: 12px; background: var(--mint); color: var(--pine); font-size: .88rem; }
 .success.show { display: block; }
+.server-error { display: none; margin-top: 15px; padding: 13px; border-radius: 12px; background: #fff1f0; color: #a73022; font-size: .88rem; border: 1px solid #fecaca; }
+.server-error.show { display: block; }
 .form-note { font-size: .75rem; color: var(--muted); margin: 13px 0 0; }
 .hp-field { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
 
@@ -298,7 +300,7 @@ footer.site-footer { padding: 44px 0 28px; background: #f2f5f2; }
   .form-wrap { margin: 10px; text-align: left; }
   .demo-badge { display: flex; width: max-content; max-width: 100%; margin-left: auto; margin-right: auto; text-align: center; }
   .form-wrap .btn { display: flex; width: 100%; }
-  .form-wrap .form-note, .form-wrap .success { text-align: center; }
+  .form-wrap .form-note, .form-wrap .success, .form-wrap .server-error { text-align: center; }
   .fields { grid-template-columns: 1fr; }
   .field.full { grid-column: auto; }
   .footer-top { text-align: center; align-items: center; }

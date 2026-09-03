@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { DM_Sans, Newsreader } from 'next/font/google';
 import './globals.css';
+import UtmTracker from '@/components/UtmTracker';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -44,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${newsreader.variable}`}>
       <body>
+        <UtmTracker />
         <a className="skip" href="#main">
           Skip to content
         </a>
