@@ -20,8 +20,6 @@ export interface IUtmCampaign extends Document {
   placement?: string;
   campaignid?: string;
   adgroupid?: string;
-  clientIp?: string;
-  userAgent?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,8 +45,6 @@ const UtmCampaignSchema: Schema<IUtmCampaign> = new Schema(
     placement: { type: String, required: false, trim: true },
     campaignid: { type: String, required: false, trim: true },
     adgroupid: { type: String, required: false, trim: true },
-    clientIp: { type: String, required: false, trim: true },
-    userAgent: { type: String, required: false, trim: true },
   },
   {
     timestamps: true,

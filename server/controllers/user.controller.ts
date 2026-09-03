@@ -33,17 +33,7 @@ export class UserController {
         );
       }
 
-      const clientIp =
-        req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-        req.headers.get('x-real-ip') ||
-        undefined;
-      const userAgent = req.headers.get('user-agent') || undefined;
-
-      const result = await this.service.registerUser(
-        validationResult.data,
-        clientIp,
-        userAgent
-      );
+      const result = await this.service.registerUser(validationResult.data);
 
       const status = result.status === 'new' ? HTTP_STATUS.CREATED : HTTP_STATUS.OK;
       return sendSuccess(

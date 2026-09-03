@@ -11,11 +11,7 @@ export interface ServiceSignupResult {
 export class UserService {
   constructor(private repository: UserRepository) {}
 
-  async registerUser(
-    data: SignupInput,
-    clientIp?: string,
-    userAgent?: string
-  ): Promise<ServiceSignupResult> {
+  async registerUser(data: SignupInput): Promise<ServiceSignupResult> {
     // Honeypot spam check: silent discard
     if (data.website && data.website.trim() !== '') {
       logger.info('Honeypot triggered, silently discarding spam enquiry');
@@ -44,8 +40,6 @@ export class UserService {
       placement: data.placement,
       campaignid: data.campaignid,
       adgroupid: data.adgroupid,
-      clientIp,
-      userAgent,
     };
 
     const careData = {
