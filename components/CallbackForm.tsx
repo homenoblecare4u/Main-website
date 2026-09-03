@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, FormEvent, RefObject } from 'react';
+import { submitCallbackEnquiry } from '@/lib/api/callback';
+import { clearAttribution } from '@/lib/utm';
 
 interface FormValues {
   name: string;
@@ -45,12 +47,15 @@ export default function CallbackForm() {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
   const serviceRef = useRef<HTMLSelectElement>(null);
   const cityRef = useRef<HTMLInputElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
 
   const fieldRefs: Record<string, RefObject<HTMLInputElement | HTMLSelectElement | null>> = {
     name: nameRef,
@@ -68,6 +73,8 @@ export default function CallbackForm() {
   const handleChange = (field: keyof FormValues, value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }));
     setIsSuccess(false);
+    setSuccessMessage(null);
+    setServerError(null);
 
     if (field in rules) {
       const key = field as keyof FormErrors;
@@ -82,13 +89,15 @@ export default function CallbackForm() {
     validateField(field, values[field]);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
 
     setIsSuccess(false);
+    setSuccessMessage(null);
+    setServerError(null);
 
-    // Honeypot check
+    // Honeypot check - reject silently if filled
     if (values.website.trim() !== '') {
       return;
     }
@@ -130,16 +139,51 @@ export default function CallbackForm() {
       return;
     }
 
-    // Prevent duplicate submit & show demo completion
     setIsSubmitting(true);
-    setIsSuccess(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      if (successRef.current) {
-        successRef.current.focus();
+    try {
+      const result = await submitCallbackEnquiry(trimmedValues);
+
+      if (result.ok) {
+        setIsSuccess(true);
+        setSuccessMessage(result.message);
+        setServerError(null);
+
+        // Clear stored attribution only upon verified API success
+        clearAttribution();
+
+        // Reset form values only on verified success
+        setValues({
+          name: '',
+          phone: '',
+          service: '',
+          city: '',
+          message: '',
+          website: '',
+        });
+        setTouched({});
+        setErrors({ name: false, phone: false, service: false, city: false });
+
+        setTimeout(() => {
+          if (successRef.current) {
+            successRef.current.focus();
+          }
+        }, 50);
+      } else {
+        // Preserve entered user values and attribution on failure
+        setIsSuccess(false);
+        setSuccessMessage(null);
+        setServerError(result.message);
+
+        setTimeout(() => {
+          if (errorRef.current) {
+            errorRef.current.focus();
+          }
+        }, 50);
       }
-    }, 600);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -149,16 +193,15 @@ export default function CallbackForm() {
           <p className="eyebrow">Start a conversation</p>
           <h2>Let’s find the right care for your family.</h2>
           <p>
-            Tell us a little about what you need. In the real website, a care coordinator would contact you to discuss
-            the next step.
+            Tell us a little about what you need. A Noblecare4u care coordinator will contact you to understand your
+            requirements and guide you through the next step.
           </p>
           <p className="mini-note">
-            <strong>Prototype note:</strong> Business phone, email, service locations and operating hours are awaiting
-            client confirmation.
+            <strong>Personal guidance:</strong> We’ll help you choose the right home-care service based on your family’s
+            needs and availability in your city.
           </p>
         </div>
         <div className="form-wrap">
-          <span className="demo-badge">UI DEMO ONLY — NO DATA IS SENT</span>
           <form id="careForm" noValidate onSubmit={handleSubmit}>
             <div className="hp-field" aria-hidden="true">
               <label htmlFor="website">Leave this field empty</label>
@@ -294,13 +337,23 @@ export default function CallbackForm() {
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >
-              Preview request <span aria-hidden="true">→</span>
+              {isSubmitting ? 'Submitting request...' : 'Request a callback'} <span aria-hidden="true">→</span>
             </button>
 
             <p className="form-note">
-              This standalone prototype has no backend or API connection. Your details stay in this browser and are not
-              submitted.
+              Enquiries are securely processed and coordinated by our Noblecare4u care team.
             </p>
+
+            <div
+              ref={errorRef}
+              className={`server-error ${serverError ? 'show' : ''}`}
+              id="serverError"
+              role="alert"
+              aria-live="assertive"
+              tabIndex={-1}
+            >
+              {serverError}
+            </div>
 
             <div
               ref={successRef}
@@ -310,7 +363,7 @@ export default function CallbackForm() {
               aria-live="polite"
               tabIndex={-1}
             >
-              Demo complete: the form passed local validation. No information was sent or saved.
+              {successMessage}
             </div>
           </form>
         </div>

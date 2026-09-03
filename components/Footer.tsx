@@ -33,8 +33,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="copyright">
-          © 2026 Noblecare4u. UI prototype only. Final legal details, policies and contact information pending client
-          approval.
+          © 2026 Noblecare4u. All rights reserved.
         </div>
       </div>
     </footer>
