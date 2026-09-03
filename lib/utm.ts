@@ -10,6 +10,8 @@ export const ALLOWED_UTM_KEYS = [
   'platform',
   'gclid',
   'fbclid',
+  'fbp',
+  'fbc',
   'matchtype',
   'network',
   'device',
