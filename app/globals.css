@@ -192,7 +192,6 @@ details p { color: var(--muted); padding: 0 34px 23px 0; margin: 0; }
 .contact-copy p { color: #cbdad6; margin-top: 20px; }
 .mini-note { padding-top: 25px; border-top: 1px solid rgba(255, 255, 255, .2); font-size: .85rem; }
 .form-wrap { margin: 16px; background: #fff; color: var(--ink); border-radius: 24px; padding: 38px; }
-.demo-badge { display: inline-flex; padding: 6px 10px; border-radius: 99px; background: #fff1df; color: #8a4d1b; font-size: .74rem; font-weight: 700; margin-bottom: 22px; }
 .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .field.full { grid-column: 1/-1; }
 label { display: block; font-size: .84rem; font-weight: 700; margin-bottom: 7px; }
@@ -298,7 +297,6 @@ footer.site-footer { padding: 44px 0 28px; background: #f2f5f2; }
   .contact-copy .eyebrow { justify-content: center; }
   .contact-shell { border-radius: 24px; }
   .form-wrap { margin: 10px; text-align: left; }
-  .demo-badge { display: flex; width: max-content; max-width: 100%; margin-left: auto; margin-right: auto; text-align: center; }
   .form-wrap .btn { display: flex; width: 100%; }
   .form-wrap .form-note, .form-wrap .success, .form-wrap .server-error { text-align: center; }
   .fields { grid-template-columns: 1fr; }

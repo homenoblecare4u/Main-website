@@ -19,17 +19,17 @@ const newsreader = Newsreader({
 
 export const metadata: Metadata = {
   title: 'Noblecare4u — Thoughtful care, right at home',
-  description: 'Noblecare4u home healthcare UI prototype for elder care, nursing and physiotherapy.',
+  description: 'Noblecare4u provides thoughtful elder care, nursing and physiotherapy services at home.',
   openGraph: {
     title: 'Noblecare4u — Thoughtful care, right at home',
-    description: 'Noblecare4u home healthcare UI prototype for elder care, nursing and physiotherapy.',
+    description: 'Thoughtful elder care, nursing and physiotherapy services delivered at home.',
     siteName: 'Noblecare4u',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Noblecare4u — Thoughtful care, right at home',
-    description: 'Noblecare4u home healthcare UI prototype for elder care, nursing and physiotherapy.',
+    description: 'Thoughtful elder care, nursing and physiotherapy services delivered at home.',
   },
   robots: {
     index: true,

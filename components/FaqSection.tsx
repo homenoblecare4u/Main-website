@@ -44,8 +44,8 @@ export default function FaqSection() {
           <details>
             <summary>How is pricing decided?</summary>
             <p>
-              Pricing depends on the service, session or shift length, frequency and clinical requirements. No price is
-              confirmed through this UI prototype.
+              Pricing depends on the service, session or shift length, frequency and clinical requirements. Your care
+              coordinator will explain the applicable options before care begins.
             </p>
           </details>
         </RevealWrapper>

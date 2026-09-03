@@ -193,16 +193,15 @@ export default function CallbackForm() {
           <p className="eyebrow">Start a conversation</p>
           <h2>Let’s find the right care for your family.</h2>
           <p>
-            Tell us a little about what you need. In the real website, a care coordinator would contact you to discuss
-            the next step.
+            Tell us a little about what you need. A Noblecare4u care coordinator will contact you to understand your
+            requirements and guide you through the next step.
           </p>
           <p className="mini-note">
-            <strong>Prototype note:</strong> Business phone, email, service locations and operating hours are awaiting
-            client confirmation.
+            <strong>Personal guidance:</strong> We’ll help you choose the right home-care service based on your family’s
+            needs and availability in your city.
           </p>
         </div>
         <div className="form-wrap">
-          <span className="demo-badge">UI DEMO ONLY — NO DATA IS SENT</span>
           <form id="careForm" noValidate onSubmit={handleSubmit}>
             <div className="hp-field" aria-hidden="true">
               <label htmlFor="website">Leave this field empty</label>
@@ -338,7 +337,7 @@ export default function CallbackForm() {
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >
-              {isSubmitting ? 'Submitting request...' : 'Preview request'} <span aria-hidden="true">→</span>
+              {isSubmitting ? 'Submitting request...' : 'Request a callback'} <span aria-hidden="true">→</span>
             </button>
 
             <p className="form-note">
