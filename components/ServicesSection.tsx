@@ -69,6 +69,25 @@ export default function ServicesSection() {
               </a>
             </div>
           </RevealWrapper>
+
+          <RevealWrapper className="service-card" tag="article">
+            <Image
+              src="/images/noblecare4u/baby-care-nannies.webp"
+              alt="Indian professional nanny playing with a joyful baby with an elephant toy in a sunlit living room at home"
+              width={360}
+              height={240}
+            />
+            <div className="service-body">
+              <h3>Baby Care &amp; Nannies</h3>
+              <p>
+                Compassionate in-home support for newborns, babies and growing children, helping families with daily
+                routines, supervision and dependable childcare.
+              </p>
+              <a className="text-link" href="#contact">
+                Enquire about baby care &amp; nannies <span>→</span>
+              </a>
+            </div>
+          </RevealWrapper>
         </div>
       </div>
     </section>

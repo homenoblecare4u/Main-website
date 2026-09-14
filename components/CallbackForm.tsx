@@ -285,6 +285,7 @@ export default function CallbackForm() {
                   <option value="Elder Care">Elder Care</option>
                   <option value="Nursing">Nursing</option>
                   <option value="Physiotherapy">Physiotherapy</option>
+                  <option value="Baby Care & Nannies">Baby Care & Nannies</option>
                   <option value="Not sure yet">Not sure yet</option>
                 </select>
                 <p className={`error ${errors.service ? 'show' : ''}`} id="serviceError" role="alert">

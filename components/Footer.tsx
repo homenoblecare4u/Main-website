@@ -15,7 +15,7 @@ export default function Footer() {
                 height={39}
               />
             </a>
-            <p>Home healthcare focused on elder care, nursing and physiotherapy.</p>
+            <p>Home healthcare focused on elder care, nursing, physiotherapy and baby care &amp; nannies.</p>
           </div>
           <div className="footer-links">
             <div>
@@ -29,6 +29,7 @@ export default function Footer() {
               <a href="#contact">Elder care</a>
               <a href="#contact">Nursing</a>
               <a href="#contact">Physiotherapy</a>
+              <a href="#contact">Baby care &amp; nannies</a>
             </div>
           </div>
         </div>
