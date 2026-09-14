@@ -139,7 +139,7 @@ section { padding: 105px 0; }
 .section-head h2 { max-width: 680px; }
 .section-head .lead { margin: 0; }
 .services { background: #fff; }
-.service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.service-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .service-card { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fff; transition: .25s transform, .25s box-shadow; }
 .service-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
 .service-card img { width: 100%; height: 240px; object-fit: cover; }
@@ -220,6 +220,10 @@ footer.site-footer { padding: 44px 0 28px; background: #f2f5f2; }
 
 .reveal { opacity: 0; transform: translateY(18px); transition: .6s opacity, .6s transform; }
 .reveal.visible { opacity: 1; transform: none; }
+
+@media(max-width:1040px) {
+  .service-grid { grid-template-columns: repeat(2, 1fr); }
+}
 
 @media(max-width:850px) {
   .carebar { display: none; }

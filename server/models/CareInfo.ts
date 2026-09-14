@@ -4,6 +4,7 @@ export const CARE_NEEDED_OPTIONS = [
   'Elder Care',
   'Nursing',
   'Physiotherapy',
+  'Baby Care & Nannies',
   'Not sure yet',
 ] as const;
 

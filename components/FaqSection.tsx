@@ -16,8 +16,8 @@ export default function FaqSection() {
           <details>
             <summary>Which services does Noblecare4u provide?</summary>
             <p>
-              The current core services are elder care, nursing at home and physiotherapy at home. The exact plan depends
-              on the person&apos;s needs and a care assessment.
+              The current core services are elder care, nursing at home, physiotherapy at home and baby care &amp;
+              nannies. The exact plan depends on the family&apos;s needs and a care assessment.
             </p>
           </details>
           <details>

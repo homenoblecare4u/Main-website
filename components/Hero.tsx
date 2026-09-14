@@ -8,8 +8,8 @@ export default function Hero() {
           <p className="eyebrow">Professional home healthcare</p>
           <h1>Care that feels close, even at home.</h1>
           <p className="lead">
-            Compassionate elder care, skilled nursing and personalised physiotherapy—thoughtfully coordinated around
-            your family&apos;s needs.
+            Compassionate elder care, skilled nursing, physiotherapy and trusted baby care—thoughtfully coordinated
+            around your family&apos;s needs.
           </p>
           <div className="hero-actions">
             <a className="btn btn-primary" href="#contact">
@@ -24,6 +24,7 @@ export default function Hero() {
               <span>RN</span>
               <span>PT</span>
               <span>EC</span>
+              <span>BC</span>
             </div>
             <span>Care coordinated by trained professionals</span>
           </div>
